@@ -8,10 +8,11 @@ Full-stack stock analytics and investing education app using:
 
 ## Pages
 
-- `frontend/index.html`: dashboard with symbol search, zoomable price charts, and model-based forecasts
-- `frontend/markets.html`: sector allocation chart and stock table
-- `frontend/analytics.html`: interactive price, PE ratio, and volume comparisons
-- `frontend/training.html`: student-friendly training mode with a paper-trading simulator, 500-company arena, and layered teaching charts
+- `frontend/index.html`: dashboard with company selection, zoomable price charts, and model-based forecasts
+- `frontend/training.html`: student-friendly training mode with a paper-trading simulator, company arena, and layered teaching charts
+
+The deployed Spring Boot app serves the public frontend from `src/main/resources/static`.
+The Markets and Analytics pages are kept out of GitHub for this demo.
 
 ## Backend API
 
@@ -46,8 +47,20 @@ The current seed is a large Yahoo Finance-backed S&P 500-style dataset with mult
 
 Useful URLs:
 
+- `http://localhost:8081`
 - `http://localhost:8081/api/stocks`
 - `http://localhost:8081/h2-console`
+
+## Deploy The Full App
+
+This repo includes a `Dockerfile` and `render.yaml` so the Spring Boot backend and frontend can deploy together as one Render web service.
+
+1. Push the latest code to GitHub.
+2. Go to Render and create a new Blueprint from this repository, or create a new Web Service using Docker.
+3. Render will build the Docker image and start the app.
+4. Open the `onrender.com` URL Render gives you.
+
+The live URL should load the dashboard directly, and the API calls should work from the same domain.
 
 ## Run Frontend
 
