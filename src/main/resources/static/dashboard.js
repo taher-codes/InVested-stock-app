@@ -14,11 +14,21 @@ const predictionButton = document.getElementById("predictionButton");
 const predictionExplanation = document.getElementById("predictionExplanation");
 const resetZoomButton = document.getElementById("resetZoomButton");
 const historyRangeSelect = document.getElementById("historyRangeSelect");
+const watchlistForm = document.getElementById("watchlistForm");
+const watchlistItemId = document.getElementById("watchlistItemId");
+const watchlistSymbolSelect = document.getElementById("watchlistSymbolSelect");
+const watchlistTargetInput = document.getElementById("watchlistTargetInput");
+const watchlistNotesInput = document.getElementById("watchlistNotesInput");
+const watchlistSaveButton = document.getElementById("watchlistSaveButton");
+const watchlistCancelButton = document.getElementById("watchlistCancelButton");
+const watchlistStatus = document.getElementById("watchlistStatus");
+const watchlistItems = document.getElementById("watchlistItems");
 
 let priceChart;
 let predictionChart;
 let currentSymbol = "AAPL";
 let currentSeries = [];
+let currentWatchlist = [];
 
 const historyRangeLabels = {
     all: "All data",
@@ -42,12 +52,23 @@ const modelLabels = {
 
 function renderSymbolOptions(stocks) {
     symbolSelect.innerHTML = "";
+    watchlistSymbolSelect.innerHTML = "";
     stocks.forEach((stock) => {
         const option = document.createElement("option");
         option.value = stock.symbol;
         option.textContent = `${stock.symbol} - ${stock.companyName}`;
         symbolSelect.appendChild(option);
+        watchlistSymbolSelect.appendChild(option.cloneNode(true));
     });
+}
+
+function escapeHtml(value) {
+    return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll("\"", "&quot;")
+        .replaceAll("'", "&#039;");
 }
 
 function formatModelLabel(model) {
@@ -195,6 +216,100 @@ async function loadStockOptions() {
     renderSymbolOptions(stocks);
 }
 
+function resetWatchlistForm() {
+    watchlistItemId.value = "";
+    watchlistSymbolSelect.value = currentSymbol;
+    watchlistTargetInput.value = "";
+    watchlistNotesInput.value = "";
+    watchlistSaveButton.textContent = "Add Item";
+    watchlistCancelButton.classList.add("hidden");
+}
+
+function renderWatchlist(items) {
+    currentWatchlist = items;
+    watchlistStatus.textContent = `${items.length} saved idea${items.length === 1 ? "" : "s"}`;
+
+    if (items.length === 0) {
+        watchlistItems.innerHTML = `<p class="empty-state">No saved ideas yet.</p>`;
+        return;
+    }
+
+    watchlistItems.innerHTML = items.map((item) => `
+        <article class="watchlist-item">
+            <div>
+                <strong>${escapeHtml(item.symbol)}</strong>
+                <p>${escapeHtml(item.companyName)}</p>
+                <div class="watchlist-meta">
+                    <span>Current ${currency(item.currentPrice)}</span>
+                    <span>Target ${currency(item.targetPrice)}</span>
+                    <span class="${changeClass(item.changePercent)}">${signedPercent(item.changePercent)}</span>
+                </div>
+                <p class="watchlist-note">${escapeHtml(item.notes)}</p>
+            </div>
+            <div class="watchlist-actions">
+                <button class="small-button" type="button" data-action="edit" data-id="${item.id}">Edit</button>
+                <button class="ghost-button small-button" type="button" data-action="delete" data-id="${item.id}">Delete</button>
+            </div>
+        </article>
+    `).join("");
+}
+
+async function sendWatchlistRequest(url, method, payload) {
+    const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+    if (!response.ok) {
+        throw new Error(`Watchlist request failed with status ${response.status}`);
+    }
+    return response.status === 204 ? null : response.json();
+}
+
+async function loadWatchlist() {
+    const items = await fetchJson(WATCHLIST_API);
+    renderWatchlist(items);
+}
+
+async function saveWatchlistItem() {
+    const payload = {
+        symbol: watchlistSymbolSelect.value,
+        targetPrice: Number(watchlistTargetInput.value),
+        notes: watchlistNotesInput.value.trim()
+    };
+    const id = watchlistItemId.value;
+    const url = id ? `${WATCHLIST_API}/${encodeURIComponent(id)}` : WATCHLIST_API;
+    const method = id ? "PUT" : "POST";
+    await sendWatchlistRequest(url, method, payload);
+    resetWatchlistForm();
+    await loadWatchlist();
+}
+
+function startWatchlistEdit(id) {
+    const item = currentWatchlist.find((candidate) => String(candidate.id) === String(id));
+    if (!item) {
+        return;
+    }
+    watchlistItemId.value = item.id;
+    watchlistSymbolSelect.value = item.symbol;
+    watchlistTargetInput.value = Number(item.targetPrice).toFixed(2);
+    watchlistNotesInput.value = item.notes;
+    watchlistSaveButton.textContent = "Update Item";
+    watchlistCancelButton.classList.remove("hidden");
+    watchlistTargetInput.focus();
+}
+
+async function deleteWatchlistItem(id) {
+    const response = await fetch(`${WATCHLIST_API}/${encodeURIComponent(id)}`, { method: "DELETE" });
+    if (!response.ok) {
+        throw new Error(`Delete failed with status ${response.status}`);
+    }
+    if (watchlistItemId.value === String(id)) {
+        resetWatchlistForm();
+    }
+    await loadWatchlist();
+}
+
 async function loadDashboard(symbol = "AAPL") {
     const [summary, series, movers] = await Promise.all([
         fetchJson(`${API_BASE}/summary?symbol=${encodeURIComponent(symbol)}`),
@@ -205,6 +320,9 @@ async function loadDashboard(symbol = "AAPL") {
     currentSymbol = summary.trackedSymbol;
     currentSeries = series;
     symbolSelect.value = summary.trackedSymbol;
+    if (!watchlistItemId.value) {
+        watchlistSymbolSelect.value = summary.trackedSymbol;
+    }
     renderSummary(summary);
     renderPriceChart(filterSeriesByRange(currentSeries), summary.trackedSymbol);
     renderTopMovers(movers);
@@ -223,6 +341,29 @@ historyRangeSelect.addEventListener("change", () => {
 modelSelect.addEventListener("change", () => loadPrediction().catch(console.error));
 monthSelect.addEventListener("change", () => loadPrediction().catch(console.error));
 predictionButton.addEventListener("click", () => loadPrediction().catch(console.error));
+watchlistForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    saveWatchlistItem().catch((error) => {
+        watchlistStatus.textContent = "Could not save watchlist item";
+        console.error(error);
+    });
+});
+watchlistCancelButton.addEventListener("click", resetWatchlistForm);
+watchlistItems.addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-action]");
+    if (!button) {
+        return;
+    }
+    if (button.dataset.action === "edit") {
+        startWatchlistEdit(button.dataset.id);
+    }
+    if (button.dataset.action === "delete") {
+        deleteWatchlistItem(button.dataset.id).catch((error) => {
+            watchlistStatus.textContent = "Could not delete watchlist item";
+            console.error(error);
+        });
+    }
+});
 resetZoomButton.addEventListener("click", () => {
     if (priceChart) {
         priceChart.resetZoom();
@@ -233,8 +374,12 @@ resetZoomButton.addEventListener("click", () => {
 });
 
 loadStockOptions()
-    .then(() => loadDashboard(symbolSelect.value || "AAPL"))
+    .then(() => Promise.all([
+        loadDashboard(symbolSelect.value || "AAPL"),
+        loadWatchlist()
+    ]))
     .catch((error) => {
         marketStatus.textContent = "Could not load backend data";
+        watchlistStatus.textContent = "Could not load watchlist";
         console.error(error);
     });

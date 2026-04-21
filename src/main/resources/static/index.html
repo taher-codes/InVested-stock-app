@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>InVested | Dashboard</title>
-    <link rel="stylesheet" href="styles.css?v=20260420-bg">
+    <link rel="stylesheet" href="styles.css?v=20260421-crud">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
 </head>
@@ -128,9 +128,47 @@
                 </div>
             </article>
         </section>
+
+        <section class="card-grid watchlist-grid">
+            <article class="content-card">
+                <div class="card-heading">
+                    <h2>Watchlist Manager</h2>
+                    <p>Save a target, revise your thesis, and remove ideas from the database</p>
+                </div>
+                <form id="watchlistForm" class="watchlist-form">
+                    <input id="watchlistItemId" type="hidden">
+                    <label>
+                        Company
+                        <select id="watchlistSymbolSelect" required>
+                            <option value="AAPL">AAPL - Apple Inc.</option>
+                        </select>
+                    </label>
+                    <label>
+                        Target Price
+                        <input id="watchlistTargetInput" type="number" min="0.01" step="0.01" placeholder="185.00" required>
+                    </label>
+                    <label class="wide">
+                        Research Note
+                        <input id="watchlistNotesInput" type="text" maxlength="280" placeholder="Momentum is improving while valuation looks reasonable" required>
+                    </label>
+                    <div class="button-cluster">
+                        <button id="watchlistSaveButton" type="submit">Add Item</button>
+                        <button id="watchlistCancelButton" class="ghost-button hidden" type="button">Cancel Edit</button>
+                    </div>
+                </form>
+            </article>
+
+            <article class="content-card">
+                <div class="card-heading">
+                    <h2>Saved Ideas</h2>
+                    <p id="watchlistStatus">Loading watchlist...</p>
+                </div>
+                <div id="watchlistItems" class="stack-list"></div>
+            </article>
+        </section>
     </main>
 
-    <script src="shared.js?v=20260420"></script>
-    <script src="dashboard.js?v=20260420"></script>
+    <script src="shared.js?v=20260421-crud"></script>
+    <script src="dashboard.js?v=20260421-crud"></script>
 </body>
 </html>

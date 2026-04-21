@@ -23,8 +23,17 @@ The Markets and Analytics pages are kept out of GitHub for this demo.
 - `GET /api/stocks/sectors`
 - `GET /api/stocks/analytics`
 - `GET /api/stocks/prediction?symbol=AAPL&model=linear-regression&months=1`
+- `GET /api/watchlist`
+- `POST /api/watchlist`
+- `PUT /api/watchlist/{id}`
+- `DELETE /api/watchlist/{id}`
 - `GET /api/training/lessons`
 - `GET /api/training/live-company?symbol=AAPL`
+
+## Database CRUD Feature
+
+The dashboard includes a Watchlist Manager backed by the `watchlist_items` database table.
+It demonstrates creating, reading, updating, and deleting saved stock ideas with a symbol, target price, and research note.
 
 ## Run Locally With Seeded Data
 

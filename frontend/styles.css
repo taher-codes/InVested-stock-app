@@ -204,6 +204,7 @@ button {
 }
 
 .prediction-grid,
+.watchlist-grid,
 .training-grid {
     grid-template-columns: 1.2fr 0.8fr;
 }
@@ -438,6 +439,23 @@ th {
     margin-bottom: 18px;
 }
 
+.watchlist-form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.watchlist-form label {
+    display: grid;
+    gap: 8px;
+    color: var(--muted);
+}
+
+.watchlist-form .wide,
+.watchlist-form .button-cluster {
+    grid-column: 1 / -1;
+}
+
 .control-group label {
     display: block;
     color: var(--muted);
@@ -474,6 +492,10 @@ th {
 
 .small-button {
     padding: 12px 16px;
+}
+
+.hidden {
+    display: none;
 }
 
 .feedback-banner {
@@ -533,6 +555,44 @@ th {
 .trade-item {
     padding: 14px 0;
     border-bottom: 1px solid rgba(95, 108, 123, 0.14);
+}
+
+.watchlist-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(95, 108, 123, 0.14);
+}
+
+.watchlist-item p {
+    margin: 4px 0 0;
+    color: var(--muted);
+}
+
+.watchlist-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.88rem;
+}
+
+.watchlist-note {
+    line-height: 1.5;
+}
+
+.watchlist-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+    min-width: 150px;
+}
+
+.watchlist-actions .ghost-button {
+    margin-top: 0;
 }
 
 .holding-item,
@@ -649,6 +709,7 @@ th {
     .hero-panel,
     .dashboard-grid,
     .prediction-grid,
+    .watchlist-grid,
     .training-grid,
     .markets-grid,
     .analytics-grid,
@@ -697,15 +758,22 @@ th {
         grid-column: span 1;
     }
 
+    .watchlist-form {
+        grid-template-columns: 1fr;
+    }
+
     .briefing-header,
     .holding-item,
-    .leaderboard-item {
+    .leaderboard-item,
+    .watchlist-item {
         flex-direction: column;
     }
 
     .briefing-price,
     .leaderboard-value,
-    .list-item-right {
+    .list-item-right,
+    .watchlist-actions {
         text-align: left;
+        justify-content: flex-start;
     }
 }

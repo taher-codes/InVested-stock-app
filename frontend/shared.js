@@ -1,5 +1,6 @@
 const API_BASE = "http://localhost:8081/api/stocks";
 const TRAINING_API = "http://localhost:8081/api/training";
+const WATCHLIST_API = "http://localhost:8081/api/watchlist";
 
 async function fetchJson(url) {
     const response = await fetch(url);
