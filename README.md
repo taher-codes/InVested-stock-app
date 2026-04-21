@@ -54,6 +54,7 @@ Useful URLs:
 ## Deploy The Full App
 
 This repo includes a `Dockerfile` and `render.yaml` so the Spring Boot backend and frontend can deploy together as one Render web service.
+Render uses the `render` Spring profile, which loads `src/main/resources/data-render.sql` instead of the much larger local seed.
 
 1. Push the latest code to GitHub.
 2. Go to Render and create a new Blueprint from this repository, or create a new Web Service using Docker.
