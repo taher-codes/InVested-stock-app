@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InVested | Training Mode</title>
+    <link rel="stylesheet" href="styles.css?v=20260420-bg">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+</head>
+<body>
+    <header class="site-header">
+        <a class="brand" href="index.html">InVested</a>
+        <nav class="site-nav">
+            <a href="index.html">Dashboard</a>
+            <a href="markets.html">Markets</a>
+            <a href="analytics.html">Analytics</a>
+            <a class="active" href="training.html">Training Mode</a>
+        </nav>
+    </header>
+
+    <main class="page-shell">
+        <section class="hero-panel training-hero">
+            <div>
+                <p class="eyebrow">Student investing mode</p>
+                <h1>Paper trade a 500-company arena and teach the why behind every click.</h1>
+                <p class="subtitle">Run buy and sell simulations, scan a broad company universe, and unpack the selected stock with layered charts that make valuation, momentum, volume, and risk feel teachable.</p>
+                <div class="chip-row training-chip-row">
+                    <span class="info-chip">500-company market arena</span>
+                    <span class="info-chip">Paper portfolio scoreboard</span>
+                    <span class="info-chip">Multi-layer chart lab</span>
+                </div>
+            </div>
+
+            <div class="hero-metric-grid">
+                <article class="hero-metric-card">
+                    <span>Companies</span>
+                    <strong id="arenaCompanyCount">0</strong>
+                    <small id="arenaDataSource">Loading training dataset...</small>
+                </article>
+                <article class="hero-metric-card">
+                    <span>Advancers</span>
+                    <strong id="arenaAdvancers">0</strong>
+                    <small>Names trading green today</small>
+                </article>
+                <article class="hero-metric-card">
+                    <span>Average PE</span>
+                    <strong id="arenaAveragePe">0.0</strong>
+                    <small>Use it to frame valuation conversations</small>
+                </article>
+                <article class="hero-metric-card">
+                    <span>Top Sector</span>
+                    <strong id="arenaTopSector">-</strong>
+                    <small>Most represented area in the current universe</small>
+                </article>
+            </div>
+        </section>
+
+        <section class="card-grid training-control-grid">
+            <article class="content-card training-cockpit">
+                <div class="card-heading">
+                    <h2>Simulation Cockpit</h2>
+                    <p>Pick a company, write the idea, size the trade, and then buy or sell in your practice account.</p>
+                </div>
+
+                <div class="training-form-grid">
+                    <div class="control-group wide">
+                        <label for="companySelect">Choose a company</label>
+                        <select id="companySelect"></select>
+                    </div>
+                    <div class="control-group">
+                        <label for="sectorFilter">Sector focus</label>
+                        <select id="sectorFilter"></select>
+                    </div>
+                    <div class="control-group">
+                        <label for="quantityInput">Shares</label>
+                        <input id="quantityInput" type="number" min="1" step="1" value="10">
+                    </div>
+                    <div class="control-group wide">
+                        <label for="thesisInput">Trade thesis</label>
+                        <input id="thesisInput" type="text" placeholder="Example: momentum is improving while valuation still looks reasonable">
+                    </div>
+                </div>
+
+                <div class="button-cluster">
+                    <button id="buyButton">Buy Simulation</button>
+                    <button id="sellButton" class="secondary-button">Sell Simulation</button>
+                    <button id="riskButton" class="accent-button">Size At 2% Risk</button>
+                    <button id="resetPortfolioButton" class="ghost-button small-button">Reset Portfolio</button>
+                </div>
+
+                <p id="simulationFeedback" class="feedback-banner muted">Select a company, set a thesis, and build a position with rules instead of vibes.</p>
+            </article>
+
+            <article class="content-card training-scoreboard">
+                <div class="card-heading">
+                    <h2>Portfolio Scoreboard</h2>
+                    <p>Your paper account updates as prices move and trades are logged.</p>
+                </div>
+
+                <div class="portfolio-metric-grid">
+                    <article class="portfolio-metric">
+                        <span>Cash</span>
+                        <strong id="portfolioCash">$0</strong>
+                    </article>
+                    <article class="portfolio-metric">
+                        <span>Invested</span>
+                        <strong id="portfolioInvested">$0</strong>
+                    </article>
+                    <article class="portfolio-metric">
+                        <span>Unrealized P/L</span>
+                        <strong id="portfolioUnrealized">$0</strong>
+                    </article>
+                    <article class="portfolio-metric">
+                        <span>Realized P/L</span>
+                        <strong id="portfolioRealized">$0</strong>
+                    </article>
+                    <article class="portfolio-metric">
+                        <span>Exposure</span>
+                        <strong id="portfolioExposure">0%</strong>
+                    </article>
+                    <article class="portfolio-metric">
+                        <span>Win Rate</span>
+                        <strong id="portfolioWinRate">0%</strong>
+                    </article>
+                </div>
+
+                <div class="subsection-heading">
+                    <h3>Active Holdings</h3>
+                    <p>Watch average cost, current price, and unrealized gains or losses.</p>
+                </div>
+                <div id="holdingsList" class="stack-list compact-stack"></div>
+            </article>
+        </section>
+
+        <section class="card-grid training-analytics-grid">
+            <article class="content-card training-universe-card">
+                <div class="card-heading">
+                    <h2>500-Company Universe Map</h2>
+                    <p>Bubble position shows valuation and daily move. Bubble size reflects market cap.</p>
+                </div>
+
+                <div class="control-row">
+                    <div class="control-group">
+                        <label for="rankingMetric">Leaderboard lens</label>
+                        <select id="rankingMetric">
+                            <option value="momentumScore">Momentum leaders</option>
+                            <option value="marketCap">Largest companies</option>
+                            <option value="qualityScore">Quality names</option>
+                            <option value="dividendYield">Income ideas</option>
+                            <option value="volatilityScore">High-volatility names</option>
+                        </select>
+                    </div>
+                    <button id="resetUniverseZoomButton" class="ghost-button small-button">Reset Universe Zoom</button>
+                    <button id="resetDetailZoomButton" class="ghost-button small-button">Reset Detail Zoom</button>
+                </div>
+
+                <div class="chart-wrap tall">
+                    <canvas id="universeChart"></canvas>
+                </div>
+
+                <div class="subsection-heading">
+                    <h3>Ranked Watchlist</h3>
+                    <p>Click any company to jump the simulator and charts to that setup.</p>
+                </div>
+                <div id="universeLeaderboard" class="stack-list compact-stack"></div>
+            </article>
+
+            <article class="content-card training-briefing-card">
+                <div class="card-heading">
+                    <h2>Selected Company Briefing</h2>
+                    <p>Use this panel to turn raw numbers into coaching moments.</p>
+                </div>
+
+                <div id="companyBriefing" class="company-briefing"></div>
+
+                <div class="chart-wrap score-chart-wrap">
+                    <canvas id="companyScoreChart"></canvas>
+                </div>
+            </article>
+        </section>
+
+        <section class="card-grid training-chart-grid">
+            <article class="content-card">
+                <div class="card-heading">
+                    <h2>Price, Moving Averages, And Volume</h2>
+                    <p>The selected company gets a layered chart with price action, trend bands, and participation.</p>
+                </div>
+                <div class="chart-wrap tall">
+                    <canvas id="companyPriceChart"></canvas>
+                </div>
+            </article>
+
+            <article class="content-card">
+                <div class="card-heading">
+                    <h2>Relative Strength And Drawdown</h2>
+                    <p>Compare the stock with its benchmark path and show where momentum is helping or hurting.</p>
+                </div>
+                <div class="chart-wrap tall">
+                    <canvas id="companySignalChart"></canvas>
+                </div>
+            </article>
+        </section>
+
+        <section class="card-grid training-bottom-grid">
+            <article class="content-card">
+                <div class="card-heading">
+                    <h2>Trade Journal</h2>
+                    <p>Every simulated action is logged so students can review process, not just outcome.</p>
+                </div>
+                <div id="tradeLog" class="stack-list compact-stack"></div>
+            </article>
+
+            <article class="content-card">
+                <div class="card-heading">
+                    <h2>Lessons</h2>
+                    <p>Use these guided topics for class discussion or self-study.</p>
+                </div>
+                <div id="lessonList" class="stack-list"></div>
+            </article>
+
+            <article class="content-card">
+                <div class="card-heading">
+                    <h2>Teaching Prompts</h2>
+                    <p>Ground every simulated trade in a thesis, a risk plan, and a review question.</p>
+                </div>
+                <div class="rules-block focus-block">
+                    <p id="selectedTeachingPrompt">Select a company to generate a live teaching prompt.</p>
+                    <p id="selectedRiskPrompt">Risk prompt will appear here once a setup is selected.</p>
+                    <p id="selectedSizingPrompt">Position sizing guidance will update from the company's volatility profile.</p>
+                    <p id="selectedDatasetPrompt">If you later generate `frontend/data/training-universe.json`, this page will use the Yahoo-backed dataset automatically.</p>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <script src="shared.js"></script>
+    <script src="training.js"></script>
+</body>
+</html>

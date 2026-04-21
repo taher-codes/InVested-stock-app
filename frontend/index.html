@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InVested | Dashboard</title>
+    <link rel="stylesheet" href="styles.css?v=20260420-bg">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+</head>
+<body>
+    <header class="site-header">
+        <a class="brand" href="index.html">InVested</a>
+        <nav class="site-nav">
+            <a class="active" href="index.html">Dashboard</a>
+            <a href="markets.html">Markets</a>
+            <a href="analytics.html">Analytics</a>
+            <a href="training.html">Training Mode</a>
+        </nav>
+    </header>
+
+    <main class="page-shell">
+        <section class="hero-panel">
+            <div>
+                <p class="eyebrow">Investing analytics + student learning</p>
+                <h1>Model the market, test ideas, and learn while you analyze.</h1>
+                <p class="subtitle">InVested combines live-ready stock data workflows, prediction experiments, and guided investing lessons in one dashboard.</p>
+            </div>
+            <form class="symbol-form" id="symbolForm">
+                <label for="symbolSelect">Tracked Company</label>
+                <div class="input-row">
+                    <select id="symbolSelect" name="symbol">
+                        <option value="AAPL">AAPL - Apple Inc.</option>
+                    </select>
+                    <button type="submit">Load</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="card-grid stats-grid">
+            <article class="metric-card">
+                <span class="metric-label">Company</span>
+                <strong id="companyName">Loading...</strong>
+                <small id="trackedSymbol">--</small>
+            </article>
+            <article class="metric-card">
+                <span class="metric-label">Current Price</span>
+                <strong id="currentPrice">$0.00</strong>
+                <small id="marketStatus">Waiting for backend...</small>
+            </article>
+            <article class="metric-card">
+                <span class="metric-label">Change</span>
+                <strong id="changePercent">0.00%</strong>
+                <small>vs previous close</small>
+            </article>
+            <article class="metric-card">
+                <span class="metric-label">Volume</span>
+                <strong id="volumeValue">0</strong>
+                <small id="peRatio">PE 0.00</small>
+            </article>
+        </section>
+
+        <section class="card-grid dashboard-grid">
+            <article class="content-card">
+                <div class="card-heading with-control">
+                    <div>
+                        <h2>Price History</h2>
+                        <p>Pan and zoom into the selected stock's daily closes</p>
+                    </div>
+                    <label class="compact-control">
+                        Range
+                        <select id="historyRangeSelect">
+                            <option value="all">All data</option>
+                            <option value="5y">5 Years</option>
+                            <option value="2y">2 Years</option>
+                            <option value="1y">1 Year</option>
+                            <option value="6m">6 Months</option>
+                            <option value="3m">3 Months</option>
+                            <option value="1m">1 Month</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="chart-wrap tall">
+                    <canvas id="priceChart"></canvas>
+                </div>
+                <button class="ghost-button" id="resetZoomButton" type="button">Reset Zoom</button>
+            </article>
+
+            <article class="content-card">
+                <div class="card-heading">
+                    <h2>Top Movers</h2>
+                    <p>Strongest gainers in the available stock universe</p>
+                </div>
+                <div id="topMovers" class="stack-list"></div>
+            </article>
+        </section>
+
+        <section class="card-grid prediction-grid">
+            <article class="content-card">
+                <div class="card-heading">
+                    <h2>One-Month Prediction Lab</h2>
+                    <p>Compare simple models and see how each projects the next trading month</p>
+                </div>
+                <div class="control-row">
+                    <label>
+                        Model
+                        <select id="modelSelect">
+                            <option value="linear-regression">Linear Regression</option>
+                            <option value="moving-average">Moving Average</option>
+                            <option value="momentum">Momentum</option>
+                            <option value="mean-reversion">Mean Reversion</option>
+                            <option value="exponential-smoothing">Exponential Smoothing</option>
+                            <option value="volatility-adjusted">Volatility Adjusted</option>
+                            <option value="breakout">Breakout Trend</option>
+                        </select>
+                    </label>
+                    <label>
+                        Horizon
+                        <select id="monthSelect">
+                            <option value="1">1 Month</option>
+                            <option value="2">2 Months</option>
+                            <option value="3">3 Months</option>
+                        </select>
+                    </label>
+                    <button id="predictionButton" type="button">Run Forecast</button>
+                </div>
+                <p id="predictionExplanation" class="note"></p>
+                <div class="chart-wrap">
+                    <canvas id="predictionChart"></canvas>
+                </div>
+            </article>
+        </section>
+    </main>
+
+    <script src="shared.js?v=20260420"></script>
+    <script src="dashboard.js?v=20260420"></script>
+</body>
+</html>
