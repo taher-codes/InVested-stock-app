@@ -21,10 +21,16 @@ public class WatchlistService {
 
     private final WatchlistItemRepository watchlistItemRepository;
     private final StockQuoteRepository stockQuoteRepository;
+    private final WatchlistStorageService watchlistStorageService;
 
-    public WatchlistService(WatchlistItemRepository watchlistItemRepository, StockQuoteRepository stockQuoteRepository) {
+    public WatchlistService(
+            WatchlistItemRepository watchlistItemRepository,
+            StockQuoteRepository stockQuoteRepository,
+            WatchlistStorageService watchlistStorageService
+    ) {
         this.watchlistItemRepository = watchlistItemRepository;
         this.stockQuoteRepository = stockQuoteRepository;
+        this.watchlistStorageService = watchlistStorageService;
     }
 
     public List<WatchlistItemDto> getItems() {
@@ -42,7 +48,9 @@ public class WatchlistService {
         item.setNotes(cleanNotes(request.notes()));
         item.setCreatedAt(now);
         item.setUpdatedAt(now);
-        return toDto(watchlistItemRepository.save(item));
+        WatchlistItem savedItem = watchlistItemRepository.save(item);
+        watchlistStorageService.persistItems();
+        return toDto(savedItem);
     }
 
     public WatchlistItemDto updateItem(Long id, WatchlistItemRequestDto request) {
@@ -53,7 +61,9 @@ public class WatchlistService {
         item.setTargetPrice(cleanTargetPrice(request.targetPrice()));
         item.setNotes(cleanNotes(request.notes()));
         item.setUpdatedAt(LocalDateTime.now());
-        return toDto(watchlistItemRepository.save(item));
+        WatchlistItem savedItem = watchlistItemRepository.save(item);
+        watchlistStorageService.persistItems();
+        return toDto(savedItem);
     }
 
     public void deleteItem(Long id) {
@@ -61,6 +71,7 @@ public class WatchlistService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Watchlist item not found");
         }
         watchlistItemRepository.deleteById(id);
+        watchlistStorageService.persistItems();
     }
 
     private StockQuote getStock(String symbol) {
