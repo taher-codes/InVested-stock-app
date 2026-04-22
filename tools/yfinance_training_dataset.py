@@ -120,7 +120,7 @@ def main() -> None:
     for index, symbol in enumerate(symbols, start=1):
         try:
             company = build_company(symbol, args.period)
-        except Exception as error:  # noqa: BLE001
+        except Exception as error:
             print(f"[{index}/{len(symbols)}] Skipped {symbol}: {error}")
             continue
 

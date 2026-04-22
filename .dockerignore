@@ -3,6 +3,13 @@ target/
 .git/
 *.log
 *.err
+storage/
+__pycache__/
+*.pyc
+README.md
+PROJECT_REPORT_NOTES.md
+PROJECT_REPORT_NOTES.pdf
+*.pdf
 
 frontend/analytics.html
 frontend/analytics.js
